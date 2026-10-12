@@ -30,6 +30,7 @@ Bağımlılıklar hep içeri doğrudur. Domain hiçbir şeye bağlı değildir.
 | Invariant | Boş sipariş verilemez, verilen sipariş değiştirilemez, para birimi tutarlı olmalı |
 | Repository | Arayüz Application'da, implementasyon Infrastructure'da (bağımlılık tersine çevrilir) |
 | Unit of Work | `OrderDbContext`, `IUnitOfWork` port'unu karşılar |
+| Domain Event | `OrderPlaced`, `OrderCancelled`: `Order` içinde üretilir (`Raise`), handler kayıttan sonra `DomainEventDispatcher` ile dağıtır, dinleyiciler `IDomainEventHandler<T>` |
 | Use case / orkestrasyon | Handler'larda iş kuralı yok, sadece sıralama var |
 | Anti-corruption (basit) | Domain nesneleri API'ye sızmaz, `OrderDto` döner |
 | Hata eşleme | `DomainException` → 422, `NotFoundException` → 404, diğerleri → 500 (`ExceptionHandlingMiddleware`) |
@@ -70,5 +71,5 @@ Hazır ürünler: Kalem `11111111-1111-1111-1111-111111111111`, Defter `22222222
 - [x] Application katmanı
 - [x] Infrastructure katmanı
 - [x] Api katmanı ve middleware
-- [ ] Domain event'ler (`OrderPlaced`, `OrderCancelled`)
+- [x] Domain event'ler (`OrderPlaced`, `OrderCancelled`)
 - [ ] Domain servisi (ör. kupon/indirim hesabı)
