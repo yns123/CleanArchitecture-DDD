@@ -1,6 +1,25 @@
-@Orders.Api_HostAddress = http://localhost:5134
+@host = http://localhost:5134
 
-GET {{Orders.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+# Kalem
+@pencil = 11111111-1111-1111-1111-111111111111
+# Defter
+@notebook = 22222222-2222-2222-2222-222222222222
 
-###
+### Sipariş ver (fiyat gönderilmez, katalogdan gelir)
+POST {{host}}/api/orders
+Content-Type: application/json
+
+{
+  "customerId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+  "currency": "TRY",
+  "lines": [
+    { "productId": "{{pencil}}", "quantity": 3 },
+    { "productId": "{{notebook}}", "quantity": 1 }
+  ]
+}
+
+### Siparişi getir (id'yi yukarıdaki yanıttan al)
+GET {{host}}/api/orders/00000000-0000-0000-0000-000000000000
+
+### İptal et
+POST {{host}}/api/orders/00000000-0000-0000-0000-000000000000/cancel

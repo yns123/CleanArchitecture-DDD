@@ -1,3 +1,4 @@
+using Orders.Api.Middleware;
 using Orders.Application;
 using Orders.Infrastructure;
 
@@ -12,6 +13,9 @@ builder.Services.AddInfrastructure(
     ?? throw new InvalidOperationException("ConnectionStrings:OrdersDb eksik."));
 
 var app = builder.Build();
+
+// Pipeline sırası önemli: hata yakalayıcı en dışta, böylece içerideki her şeyin hatasını görür.
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
