@@ -1,10 +1,11 @@
 using Orders.Domain.Common;
+using Orders.Domain.Orders.Events;
 
 namespace Orders.Domain.Orders;
 
 // Aggregate Root: dışarıya açılan tek kapı. Tüm iş kuralları (invariant) burada korunur.
 // Dışarıdan Items.Add(...) yapılamaz; sadece AddItem() gibi davranışlarla değişir.
-public sealed class Order
+public sealed class Order : AggregateRoot
 {
     private readonly List<OrderItem> _items = [];
 
@@ -53,12 +54,14 @@ public sealed class Order
         EnsureDraft();
         if (_items.Count == 0) throw new DomainException("Boş sipariş verilemez.");
         Status = OrderStatus.Placed;
+        Raise(new OrderPlaced(Id, CustomerId, Total));
     }
 
     public void Cancel()
     {
         if (Status == OrderStatus.Cancelled) throw new DomainException("Sipariş zaten iptal edilmiş.");
         Status = OrderStatus.Cancelled;
+        Raise(new OrderCancelled(Id, CustomerId));
     }
 
     private void EnsureDraft()
