@@ -14,6 +14,9 @@ public sealed class OrderItem
 
     public Money Total => UnitPrice.Multiply(Quantity);
 
+    // EF Core materialize ederken kullanır. Domain'e yapılan tek "persistence tavizi".
+    private OrderItem() { ProductName = default!; UnitPrice = default!; }
+
     internal OrderItem(Guid productId, string productName, Money unitPrice, int quantity)
     {
         if (quantity <= 0) throw new DomainException("Adet 0'dan büyük olmalı.");
