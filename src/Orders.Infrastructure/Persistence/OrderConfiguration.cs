@@ -15,8 +15,9 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>, IEnt
         builder.Property(o => o.Currency).HasMaxLength(3).IsRequired();
         builder.Property(o => o.Status).HasConversion<string>().HasMaxLength(20);
 
-        // Total hesaplanan bir değer, kolonu yok.
+        // Total hesaplanan değer, DomainEvents ise bellekte bekleyen olaylar: ikisinin de kolonu yok.
         builder.Ignore(o => o.Total);
+        builder.Ignore(o => o.DomainEvents);
 
         // Items public olarak salt okunur; EF _items alanına yazar.
         builder.HasMany(o => o.Items).WithOne().OnDelete(DeleteBehavior.Cascade);
