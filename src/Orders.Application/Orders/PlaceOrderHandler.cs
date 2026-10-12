@@ -8,8 +8,9 @@ public sealed record PlaceOrderLine(Guid ProductId, int Quantity);
 public sealed record PlaceOrderCommand(Guid CustomerId, string Currency, IReadOnlyList<PlaceOrderLine> Lines);
 
 // Use case = Application katmanının işi: orkestrasyon. İş kuralı YOK (onlar Order'da).
-// Handler: katalogdan fiyatı al -> aggregate'i çağır -> kaydet.
-public sealed class PlaceOrderHandler(IOrderRepository orders, IProductCatalog catalog, IUnitOfWork uow)
+// Handler: katalogdan fiyatı al -> aggregate'i çağır -> kaydet -> event'leri dağıt.
+public sealed class PlaceOrderHandler(
+    IOrderRepository orders, IProductCatalog catalog, IUnitOfWork uow, IDomainEventDispatcher events)
 {
     public async Task<OrderDto> HandleAsync(PlaceOrderCommand cmd, CancellationToken ct)
     {
@@ -25,6 +26,9 @@ public sealed class PlaceOrderHandler(IOrderRepository orders, IProductCatalog c
         order.Place();
         await orders.AddAsync(order, ct);
         await uow.SaveChangesAsync(ct);
+
+        // Kayıttan SONRA: sipariş gerçekten kalıcı olmadan kimseye "alındı" demeyiz.
+        await events.DispatchAsync(order, ct);
         return OrderDto.From(order);
     }
 }
